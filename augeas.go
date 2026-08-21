@@ -4,7 +4,11 @@
 
 package augeas
 
-import engine "github.com/go-augeas/augeas"
+import (
+	"sync"
+
+	engine "github.com/go-augeas/augeas"
+)
 
 // Flag values mirror the ruby-augeas AUG_* constants passed to Augeas.open.
 // They are recorded on the handle so a Ruby binding round-trips them; the pure-Go
@@ -35,8 +39,32 @@ type FileSystem = engine.FileSystem
 // deferred feature of the engine.
 var ErrSpanUnsupported = engine.ErrSpanUnsupported
 
-// LensByName returns the built-in engine lens registered under name.
-func LensByName(name string) (Lens, bool) { return engine.LensByName(name) }
+// lensEngine resolves lenses out of the engine's embedded .aug corpus. It is
+// built once: NewEngine parses the corpus, which is not free.
+var lensEngine = sync.OnceValue(engine.NewEngine)
+
+// LensByName returns the lens the engine publishes under name.
+//
+// It used to be a straight re-export of engine.LensByName, which reads a
+// registry that the engine populated from hand-written Go lenses. The engine's
+// v2 rewrite replaced those with a pure-Go interpreter over the real Augeas
+// .aug catalogue and stopped registering anything, so that registry is now
+// permanently empty and every lookup returned false -- including LensByName
+// ("Hosts"), which this package's own tests rely on.
+//
+// Lenses are now reached through the interpreter, where the Augeas convention
+// is module + binding and the binding is "lns". The registry is still consulted
+// first so a lens a caller registered by hand keeps winning.
+func LensByName(name string) (Lens, bool) {
+	if l, ok := engine.LensByName(name); ok {
+		return l, true
+	}
+	l, err := lensEngine().Lens(name, "lns")
+	if err != nil {
+		return nil, false
+	}
+	return l, true
+}
 
 // Augeas is a ruby-augeas-shaped handle over a go-augeas engine tree.
 type Augeas struct {
