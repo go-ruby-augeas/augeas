@@ -186,3 +186,34 @@ func TestLensSurface(t *testing.T) {
 		t.Fatalf("saved %q", mfs.writes["out"])
 	}
 }
+
+// registeredLens is a lens registered by hand, to prove a manual registration
+// still wins over the engine's .aug corpus.
+type registeredLens struct{}
+
+func (registeredLens) Parse(string) (*engine.Node, error) { return &engine.Node{}, nil }
+func (registeredLens) Build(*engine.Node) (string, error) { return "manual", nil }
+
+// TestLensByNameSources covers all three ways LensByName can end: a hand
+// registration, the engine's corpus, and a name that is in neither.
+func TestLensByNameSources(t *testing.T) {
+	// 1. A hand registration takes precedence.
+	engine.Register("HandRegistered", registeredLens{})
+	l, ok := LensByName("HandRegistered")
+	if !ok {
+		t.Fatal("a hand-registered lens must be found")
+	}
+	if out, _ := l.Build(nil); out != "manual" {
+		t.Errorf("the registry lens should win, got %q", out)
+	}
+
+	// 2. Resolved from the engine's embedded .aug corpus.
+	if _, ok := LensByName("Hosts"); !ok {
+		t.Error("Hosts must resolve through the interpreter")
+	}
+
+	// 3. In neither: not found, no error surfaced.
+	if _, ok := LensByName("NoSuchLensAnywhere"); ok {
+		t.Error("an unknown lens must not be found")
+	}
+}
