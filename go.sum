@@ -4,3 +4,5 @@ github.com/go-augeas/augeas v0.0.0-20260805205102-56e22795b7f2 h1:h34R4yVnrZi0jU
 github.com/go-augeas/augeas v0.0.0-20260805205102-56e22795b7f2/go.mod h1:syDsgdbvlbD/zjgs6nJktc2araTaN5DEL3a/OvPCrkM=
 github.com/go-augeas/augeas v0.0.0-20260821185939-b7ce861bfc4e h1:xwgWed9yqaTs3Obxpasfdq5k1+ezS++1dw23wxqpoVU=
 github.com/go-augeas/augeas v0.0.0-20260821185939-b7ce861bfc4e/go.mod h1:syDsgdbvlbD/zjgs6nJktc2araTaN5DEL3a/OvPCrkM=
+github.com/go-augeas/augeas v0.0.0-20260830115849-a0db83a6594a h1:WnRzPthHV1yr9s1jPmUmdApc1M3iIA1ZfH/fwKmCzFg=
+github.com/go-augeas/augeas v0.0.0-20260830115849-a0db83a6594a/go.mod h1:syDsgdbvlbD/zjgs6nJktc2araTaN5DEL3a/OvPCrkM=
