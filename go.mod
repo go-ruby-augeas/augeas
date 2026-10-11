@@ -2,4 +2,4 @@ module github.com/go-ruby-augeas/augeas
 
 go 1.27.1
 
-require github.com/go-augeas/augeas v0.0.0-20260830115849-a0db83a6594a
+require github.com/go-augeas/augeas v0.0.0-20261010192642-8f64eed836b2
